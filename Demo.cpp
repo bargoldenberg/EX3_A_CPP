@@ -15,8 +15,8 @@
 using namespace std;
 
 #include "Matrix.hpp"
-//using namespace zich;
-using namespace bar;
+using namespace zich;
+
 
 int main() {
   
@@ -26,8 +26,18 @@ int main() {
   a.print();
   Matrix b(arr,3,3);
   b.print();
+  // Matrix c = a+b;
+  a+=b;
+  a.print();
   Matrix c = a+b;
   c.print();
+  -c;
+  c.print();
+  cout<<"A"<<endl;
+  a.print();
+  cout<<"B"<<endl;
+
+
   // cout << a << endl;
   // /* prints [1 0 0]
   //           [0 1 0]

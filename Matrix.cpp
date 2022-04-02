@@ -1,8 +1,9 @@
 #include <iostream>
 #include <vector>
 #include "Matrix.hpp"
-using namespace bar;
+using namespace zich;
 using namespace std;
+
 Matrix::Matrix(vector<double> data,int n, int m){
     this->n=(size_t)n;
     this->m=(size_t)m;
@@ -23,13 +24,15 @@ Matrix::Matrix(vector<double> data,int n, int m){
         }
     }
 }
+
 Matrix::~Matrix(){
     for(size_t i = 0;i<this->n;i++){
         delete [] this->matrix[i];
     }
     delete [] this->matrix;
 }
-void Matrix::print(){
+
+void const Matrix::print(){
     uint n = (size_t)this->n;
     uint m = (size_t)this->m;
     for(uint i=0;i<n;i++){
@@ -40,7 +43,7 @@ void Matrix::print(){
     }
 }
 
-Matrix bar::operator+(const Matrix& a,const Matrix& b) {
+Matrix zich::operator+(const Matrix& a,const Matrix& b) {
     if(a.m!=b.m||a.n!=b.n){
         throw invalid_argument("dimensions are different");
     }
@@ -57,5 +60,93 @@ Matrix bar::operator+(const Matrix& a,const Matrix& b) {
         }
     }
     return Matrix(res,(int)n,(int)m);
+}
+Matrix zich::operator-(const Matrix& a,const Matrix& b) {
+    return a+(-b);
+}
+
+Matrix zich::Matrix::operator+(){
+    vector<double> res;
+    res.resize(this->n*this->m);
+    size_t k=0;
+    for(size_t i =0;i<this->n;i++){
+        for(size_t j = 0;j<this->m;j++){
+            res[k++]=this->matrix[i][j];
+        }
+    }
+    return Matrix(res,(int)this->n,(int)this->m);
+}
+
+void zich::Matrix::operator+=(const Matrix &a){
+     if(a.m!=this->m||a.n!=this->n){
+        throw invalid_argument("dimensions are different");
+    }
+    uint m=(uint)a.m;
+    uint n=(uint)a.n;
+    vector<double> res;
+    uint k=0;
+    res.resize(m*n);
+    for(uint i=0;i<n;i++){
+        for(uint j=0;j<m;j++){
+            this->matrix[i][j]+=a.matrix[i][j];
+        }
+    }
+}
+
+Matrix zich::Matrix::operator-(){
+    vector<double> res;
+    res.resize(this->n*this->m);
+    size_t k=0;
+    for(size_t i =0;i<this->n;i++){
+        for(size_t j = 0;j<this->m;j++){
+            res[k++]=this->matrix[i][j]*-1;
+        }
+    }
+    return Matrix(res,(int)this->n,(int)this->m);
+}
+
+bool zich::operator<(const Matrix& a, const Matrix& b){
+    double bsum = 0;
+    double asum=0;
+    for(size_t i=0;i<b.n;i++){
+        for(size_t j=0;j<b.m;j++){
+            bsum+=b.matrix[i][j];
+        }
+    }
+    for(size_t i=0;i<a.n;i++){
+        for(size_t j=0;j<a.m;j++){
+            asum += a.matrix[i][j];
+        }
+    }
+    return asum<bsum;
+}
+
+bool zich::operator==(const Matrix& a, const Matrix& b){
+    double localsum = 0;
+    double argsum=0;
+    for(size_t i=0;i<b.n;i++){
+        for(size_t j=0;j<b.m;j++){
+            localsum+=b.matrix[i][j];
+        }
+    }
+    for(size_t i=0;i<a.n;i++){
+        for(size_t j=0;j<a.m;j++){
+            argsum += a.matrix[i][j];
+        }
+    }
+    return localsum==argsum;
+}
+
+bool zich::operator>=(const Matrix& a, const Matrix& b){
+    return !(a<b);
+}
+
+bool zich::operator>(const Matrix& a, const Matrix& b){
+    return !(a<b||b==a);
+   
+}
+
+bool zich::operator<=(const Matrix& a,const Matrix& b){
+    return !(a>b);
 }
 
