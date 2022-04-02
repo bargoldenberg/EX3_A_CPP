@@ -32,17 +32,6 @@ Matrix::~Matrix(){
     delete [] this->matrix;
 }
 
-void const Matrix::print(){
-    uint n = (size_t)this->n;
-    uint m = (size_t)this->m;
-    for(uint i=0;i<n;i++){
-        for(uint j=0;j<m;j++){
-            cout<<this->matrix[i][j]<<" ";
-        }
-        cout<<endl;
-    }
-}
-
 Matrix zich::operator+(const Matrix& a,const Matrix& b) {
     if(a.m!=b.m||a.n!=b.n){
         throw invalid_argument("dimensions are different");
@@ -114,6 +103,10 @@ Matrix zich::Matrix::operator-(){
     size_t k=0;
     for(size_t i =0;i<this->n;i++){
         for(size_t j = 0;j<this->m;j++){
+            if(this->matrix[i][j]==0){
+                res[k++]=0;
+                continue;
+            }
             res[k++]=this->matrix[i][j]*-1;
         }
     }
@@ -153,7 +146,7 @@ bool zich::operator==(const Matrix& a, const Matrix& b){
             }
         }
     }
-  \
+  
     return true;
 }
 
@@ -194,3 +187,107 @@ bool zich::operator<=(const Matrix& a,const Matrix& b){
     return asum<=bsum;
 }
 
+Matrix zich::operator*(const double scalar, const Matrix& a){
+    vector<double> res;
+    res.resize(a.n*a.m);
+    size_t k=0;
+    for(size_t i = 0; i<a.m; i++){
+        for(size_t j=0; j<a.m; j++){
+            res[k++]=a.matrix[i][j]*scalar;
+        }
+    }
+    return Matrix(res,a.n,a.m);
+}
+
+Matrix zich::operator*(const Matrix& a,const double scalar){
+    return scalar*a;
+}
+
+void zich::Matrix::operator*=(const double scalar){
+    for(size_t i =0 ;i<this->n;i++){
+        for(size_t j=0;j<this->m;j++){
+            this->matrix[i][j]*=scalar;
+        }
+    }
+}
+
+void zich::Matrix::operator*=(const Matrix& a){
+    if(this->m!=a.n){
+        throw invalid_argument("cannot multiply these matrices");
+    }
+    vector<double> res;
+    res.resize(this->n*a.m);
+    size_t count=0;
+    for(size_t i=0;i<this->n;i++){
+        for(size_t j=0;j<a.m;j++){
+            for(size_t k=0;k<this->m;k++){
+                this->matrix[i][j]=this->matrix[i][k]*a.matrix[k][j];
+            };
+        }
+    }
+}
+
+Matrix zich::operator*(const Matrix& a,const Matrix& b){
+    if(a.m!=b.n){
+        throw invalid_argument("cannot multiply these matrices");
+    }
+    vector<double> res;
+    res.resize(a.n*b.m);
+    size_t count=0;
+    for(size_t i=0;i<a.n;i++){
+        for(size_t j=0;j<b.m;j++){
+            double coord=0;
+            for(size_t k=0;k<a.m;k++){
+                coord+=a.matrix[i][k]*b.matrix[k][j];
+            }
+            res[count++]=coord;
+        }
+    }
+    return Matrix(res,a.n,b.m);
+}
+
+Matrix& zich::Matrix::operator++(){
+    for(size_t i=0;i<this->n;i++){
+        for(size_t j=0;j<this->m;j++){
+            this->matrix[i][j]++;
+        }
+    }
+    return *this;
+}
+
+Matrix zich::Matrix::operator++(int){
+    Matrix temp = +(*this);
+    ++*this;
+    return temp;
+}
+
+Matrix& zich::Matrix::operator--(){
+    for(size_t i=0;i<this->n;i++){
+        for(size_t j=0;j<this->m;j++){
+            this->matrix[i][j]--;
+        }
+    }
+    return *this;
+}
+
+Matrix zich::Matrix::operator--(int){
+    Matrix temp = +(*this);
+    --*this;
+    return temp;
+}
+
+ostream& zich::operator<< (ostream& output, const Matrix& a) {
+    uint n = (size_t)a.n;
+    uint m = (size_t)a.m;
+    for(uint i=0;i<n;i++){
+        output<<"[";
+        for(uint j=0;j<m;j++){
+            output<<a.matrix[i][j];
+            if(j<m-1){
+                output<<" ";
+            }
+        }
+        output<<"]"<<endl;
+    }
+    return output;   
+}
