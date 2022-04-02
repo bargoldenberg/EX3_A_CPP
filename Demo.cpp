@@ -31,8 +31,9 @@ int main() {
   a.print();
   Matrix c = a+b;
   c.print();
-  -c;
+  Matrix x = -c;
   c.print();
+  x.print();
   cout<<"A"<<endl;
   a.print();
   cout<<"B"<<endl;

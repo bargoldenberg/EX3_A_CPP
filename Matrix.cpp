@@ -62,7 +62,22 @@ Matrix zich::operator+(const Matrix& a,const Matrix& b) {
     return Matrix(res,(int)n,(int)m);
 }
 Matrix zich::operator-(const Matrix& a,const Matrix& b) {
-    return a+(-b);
+    if(a.m!=b.m||a.n!=b.n){
+        throw invalid_argument("dimensions are different");
+    }
+    uint m=(uint)a.m;
+    uint n=(uint)a.n;
+    vector<double> res;
+    uint k=0;
+    res.resize(m*n);
+    for(uint i=0;i<n;i++){
+        for(uint j=0;j<m;j++){
+            double firstarg = a.matrix[i][j];
+            double secarg = b.matrix[i][j];
+            res[k++]=firstarg-secarg;
+        }
+    }
+    return Matrix(res,(int)n,(int)m);
 }
 
 Matrix zich::Matrix::operator+(){
@@ -105,7 +120,44 @@ Matrix zich::Matrix::operator-(){
     return Matrix(res,(int)this->n,(int)this->m);
 }
 
+void Matrix::operator-=(const Matrix &a){
+     if(a.m!=this->m||a.n!=this->n){
+        throw invalid_argument("dimensions are different");
+    }
+    uint m=(uint)a.m;
+    uint n=(uint)a.n;
+    vector<double> res;
+    uint k=0;
+    res.resize(m*n);
+    for(uint i=0;i<n;i++){
+        for(uint j=0;j<m;j++){
+            this->matrix[i][j]-=a.matrix[i][j];
+        }
+    }
+}
+
 bool zich::operator<(const Matrix& a, const Matrix& b){
+    return !(a>=b);
+}
+
+bool zich::operator==(const Matrix& a, const Matrix& b){
+    double localsum = 0;
+    double argsum=0;
+    if(a.m!=b.m||a.n!=b.n){
+        throw invalid_argument("dimensions are different");
+    }
+    for(size_t i=0;i<b.n;i++){
+        for(size_t j=0;j<b.m;j++){
+            if(a.matrix[i][j]!=b.matrix[i][j]){
+                return false;
+            }
+        }
+    }
+  \
+    return true;
+}
+
+bool zich::operator>=(const Matrix& a, const Matrix& b){
     double bsum = 0;
     double asum=0;
     for(size_t i=0;i<b.n;i++){
@@ -118,35 +170,27 @@ bool zich::operator<(const Matrix& a, const Matrix& b){
             asum += a.matrix[i][j];
         }
     }
-    return asum<bsum;
+    return asum>=bsum;
 }
 
-bool zich::operator==(const Matrix& a, const Matrix& b){
-    double localsum = 0;
-    double argsum=0;
+
+bool zich::operator>(const Matrix& a, const Matrix& b){
+    return !(a<=b);
+}
+
+bool zich::operator<=(const Matrix& a,const Matrix& b){
+    double bsum = 0;
+    double asum=0;
     for(size_t i=0;i<b.n;i++){
         for(size_t j=0;j<b.m;j++){
-            localsum+=b.matrix[i][j];
+            bsum+=b.matrix[i][j];
         }
     }
     for(size_t i=0;i<a.n;i++){
         for(size_t j=0;j<a.m;j++){
-            argsum += a.matrix[i][j];
+            asum += a.matrix[i][j];
         }
     }
-    return localsum==argsum;
-}
-
-bool zich::operator>=(const Matrix& a, const Matrix& b){
-    return !(a<b);
-}
-
-bool zich::operator>(const Matrix& a, const Matrix& b){
-    return !(a<b||b==a);
-   
-}
-
-bool zich::operator<=(const Matrix& a,const Matrix& b){
-    return !(a>b);
+    return asum<=bsum;
 }
 
