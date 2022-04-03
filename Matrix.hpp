@@ -28,6 +28,7 @@ namespace zich{
             friend Matrix operator*(const Matrix& a,const Matrix& b);
             friend bool operator<(const Matrix& a, const Matrix& b);
             friend bool operator==(const Matrix& a, const Matrix& b);
+            friend bool operator!=(const Matrix& a, const Matrix& b);
             friend bool operator<=(const Matrix& a, const Matrix& b);
             friend bool operator>(const Matrix& a, const Matrix& b);
             friend bool operator>=(const Matrix& a, const Matrix& b);

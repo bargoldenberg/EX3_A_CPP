@@ -6,15 +6,41 @@
 using namespace zich;
 using namespace std;
 
+
+void throw_exceptions(size_t size, size_t n, size_t m){
+    if(size!=n*m){
+        throw invalid_argument("data does not fit given size");
+    }
+    if(size==0){
+        throw invalid_argument("vector size must not be zero");
+    }
+    if(n<=0||m<=0){
+        throw invalid_argument("size arguments must be positive");
+    }
+}
+
+void throw_exceptions(size_t n1, size_t m1, size_t n2, size_t m2){
+    if(n1<=0||m1<=0||n2<=0||m2<=0){
+        throw invalid_argument("size arguments must be positive");
+    }
+    if(n1!=n2||m1!=m2){
+        throw invalid_argument("matrix sizes are not equal");
+    }
+}
+
+void throw_exceptions_mult(size_t n1, size_t m1, size_t n2, size_t m2){
+     if(n1<=0||m1<=0||n2<=0||m2<=0){
+        throw invalid_argument("size arguments must be positive");
+    }
+    if(m1!=n2){
+        throw invalid_argument("multiplication is not defined for these matriceis");
+    }
+}
+
 Matrix::Matrix(vector<double> data,int n, int m){
     this->n=(size_t)n;
     this->m=(size_t)m;
-    if(data.size()!=n*m){
-        throw std::runtime_error("data does not fit given size");
-    }
-    if(n<=0||m<=0){
-        throw runtime_error("n and m must be positive!");
-    }
+    throw_exceptions(data.size(),this->n,this->m);
     this->matrix = new double*[this->n];
     for(uint i=0;i<n;i++){
         this->matrix[i] = new double[this->m];
@@ -40,10 +66,8 @@ Matrix::~Matrix(){
     delete [] this->matrix;
 }
 
-Matrix zich::operator+(const Matrix& a,const Matrix& b) {
-    if(a.m!=b.m||a.n!=b.n){
-        throw invalid_argument("dimensions are different");
-    }
+Matrix zich::operator+(const Matrix& a,const Matrix& b){
+    throw_exceptions(a.n,a.m,b.n,b.m);
     uint m=(uint)a.m;
     uint n=(uint)a.n;
     vector<double> res;
@@ -59,9 +83,7 @@ Matrix zich::operator+(const Matrix& a,const Matrix& b) {
     return Matrix(res,(int)n,(int)m);
 }
 Matrix zich::operator-(const Matrix& a,const Matrix& b) {
-    if(a.m!=b.m||a.n!=b.n){
-        throw invalid_argument("dimensions are different");
-    }
+    throw_exceptions(a.n,a.m,b.n,b.m);
     uint m=(uint)a.m;
     uint n=(uint)a.n;
     vector<double> res;
@@ -90,9 +112,7 @@ Matrix zich::Matrix::operator+() const{
 }
 
 void zich::Matrix::operator+=(const Matrix &a) const{
-     if(a.m!=this->m||a.n!=this->n){
-        throw invalid_argument("dimensions are different");
-    }
+    throw_exceptions(a.n,a.m,this->n,this->m);
     uint m=(uint)a.m;
     uint n=(uint)a.n;
     vector<double> res;
@@ -122,9 +142,7 @@ Matrix zich::Matrix::operator-() const{
 }
 
 void Matrix::operator-=(const Matrix &a) const{
-     if(a.m!=this->m||a.n!=this->n){
-        throw invalid_argument("dimensions are different");
-    }
+    throw_exceptions(a.n,a.m,this->n,this->m);
     uint m=(uint)a.m;
     uint n=(uint)a.n;
     vector<double> res;
@@ -144,9 +162,7 @@ bool zich::operator<(const Matrix& a, const Matrix& b){
 bool zich::operator==(const Matrix& a, const Matrix& b){
     double localsum = 0;
     double argsum=0;
-    if(a.m!=b.m||a.n!=b.n){
-        throw invalid_argument("dimensions are different");
-    }
+    throw_exceptions(a.n,a.m,b.n,b.m);
     for(size_t i=0;i<b.n;i++){
         for(size_t j=0;j<b.m;j++){
             if(a.matrix[i][j]!=b.matrix[i][j]){
@@ -161,6 +177,7 @@ bool zich::operator==(const Matrix& a, const Matrix& b){
 bool zich::operator>=(const Matrix& a, const Matrix& b){
     double bsum = 0;
     double asum=0;
+    throw_exceptions(a.n,a.m,b.n,b.m);
     for(size_t i=0;i<b.n;i++){
         for(size_t j=0;j<b.m;j++){
             bsum+=b.matrix[i][j];
@@ -180,6 +197,7 @@ bool zich::operator>(const Matrix& a, const Matrix& b){
 }
 
 bool zich::operator<=(const Matrix& a,const Matrix& b){
+    throw_exceptions(a.n,a.m,b.n,b.m);
     double bsum = 0;
     double asum=0;
     for(size_t i=0;i<b.n;i++){
@@ -220,9 +238,7 @@ void zich::Matrix::operator*=(const double scalar) const{
 }
 
 void zich::Matrix::operator*=(const Matrix& a) const{
-    if(this->m!=a.n){
-        throw invalid_argument("cannot multiply these matrices");
-    }
+    throw_exceptions_mult(this->n,this->m,a.n,a.m);
     vector<double> res;
     res.resize(this->n*a.m);
     size_t count=0;
@@ -234,11 +250,12 @@ void zich::Matrix::operator*=(const Matrix& a) const{
         }
     }
 }
+friend bool operator!=(const Matrix& a, const Matrix& b){
+    return !(a==b);
+}
 
 Matrix zich::operator*(const Matrix& a,const Matrix& b){
-    if(a.m!=b.n){
-        throw invalid_argument("cannot multiply these matrices");
-    }
+    throw_exceptions_mult(a.n,a.m,b.n,b.m);
     vector<double> res;
     res.resize(a.n*b.m);
     size_t count=0;
@@ -307,12 +324,12 @@ istream& zich::operator>>(istream& input, Matrix& a) {
     {
         ans+=str;   
     }
-    size_t m =0;
     size_t n =0;
+    size_t m =0;
     size_t spaces=0;
     for(size_t i=0;i<ans.size();i++){
         if(ans[i]==']'){
-            m++;
+            n++;
         }
     }
     string parsed;
@@ -322,18 +339,19 @@ istream& zich::operator>>(istream& input, Matrix& a) {
         }
     }
     size_t indx =0;
-    char c;
+    char c=0;
     while(c!=','){
         c=parsed[indx++];
         if(c==' '){
             spaces++;
         }
     }
-    n=spaces+1;
+    m=spaces+1;
     ans = "";
     for(size_t i=0;i<parsed.size();i++){
-        if(parsed[i]!=',')
-        ans.push_back(parsed[i]);
+        if(parsed[i]!=','){
+            ans.push_back(parsed[i]);
+        }
     }
     string delimiter = " ";
     vector<double> vec;
@@ -346,6 +364,7 @@ istream& zich::operator>>(istream& input, Matrix& a) {
         vec.resize(size++);
         ans.erase(0, ans.find(delimiter) + delimiter.length());
     }
+    vec[indx++]=stod(ans);
     a.matrix = new double*[n];
     for(size_t i=0;i<n;i++){
         a.matrix[i] = new double[m];
@@ -361,4 +380,6 @@ istream& zich::operator>>(istream& input, Matrix& a) {
  
     return input;
 }
+
+
 
