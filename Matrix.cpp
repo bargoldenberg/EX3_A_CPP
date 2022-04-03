@@ -1,6 +1,8 @@
 #include <iostream>
 #include <vector>
 #include "Matrix.hpp"
+#include <cstring>
+#include  <bits/stdc++.h>
 using namespace zich;
 using namespace std;
 
@@ -23,6 +25,12 @@ Matrix::Matrix(vector<double> data,int n, int m){
             this->matrix[i][j]=data[k++];
         }
     }
+}
+
+Matrix::Matrix(){
+    this->n=0;
+    this->m=0;
+    this->matrix=NULL;
 }
 
 Matrix::~Matrix(){
@@ -69,7 +77,7 @@ Matrix zich::operator-(const Matrix& a,const Matrix& b) {
     return Matrix(res,(int)n,(int)m);
 }
 
-Matrix zich::Matrix::operator+(){
+Matrix zich::Matrix::operator+() const{
     vector<double> res;
     res.resize(this->n*this->m);
     size_t k=0;
@@ -81,7 +89,7 @@ Matrix zich::Matrix::operator+(){
     return Matrix(res,(int)this->n,(int)this->m);
 }
 
-void zich::Matrix::operator+=(const Matrix &a){
+void zich::Matrix::operator+=(const Matrix &a) const{
      if(a.m!=this->m||a.n!=this->n){
         throw invalid_argument("dimensions are different");
     }
@@ -97,7 +105,7 @@ void zich::Matrix::operator+=(const Matrix &a){
     }
 }
 
-Matrix zich::Matrix::operator-(){
+Matrix zich::Matrix::operator-() const{
     vector<double> res;
     res.resize(this->n*this->m);
     size_t k=0;
@@ -113,7 +121,7 @@ Matrix zich::Matrix::operator-(){
     return Matrix(res,(int)this->n,(int)this->m);
 }
 
-void Matrix::operator-=(const Matrix &a){
+void Matrix::operator-=(const Matrix &a) const{
      if(a.m!=this->m||a.n!=this->n){
         throw invalid_argument("dimensions are different");
     }
@@ -203,7 +211,7 @@ Matrix zich::operator*(const Matrix& a,const double scalar){
     return scalar*a;
 }
 
-void zich::Matrix::operator*=(const double scalar){
+void zich::Matrix::operator*=(const double scalar) const{
     for(size_t i =0 ;i<this->n;i++){
         for(size_t j=0;j<this->m;j++){
             this->matrix[i][j]*=scalar;
@@ -211,7 +219,7 @@ void zich::Matrix::operator*=(const double scalar){
     }
 }
 
-void zich::Matrix::operator*=(const Matrix& a){
+void zich::Matrix::operator*=(const Matrix& a) const{
     if(this->m!=a.n){
         throw invalid_argument("cannot multiply these matrices");
     }
@@ -222,7 +230,7 @@ void zich::Matrix::operator*=(const Matrix& a){
         for(size_t j=0;j<a.m;j++){
             for(size_t k=0;k<this->m;k++){
                 this->matrix[i][j]=this->matrix[i][k]*a.matrix[k][j];
-            };
+            }
         }
     }
 }
@@ -291,3 +299,66 @@ ostream& zich::operator<< (ostream& output, const Matrix& a) {
     }
     return output;   
 }
+
+istream& zich::operator>>(istream& input, Matrix& a) {
+    string str;
+    string ans;
+    while (getline(input, str))
+    {
+        ans+=str;   
+    }
+    size_t m =0;
+    size_t n =0;
+    size_t spaces=0;
+    for(size_t i=0;i<ans.size();i++){
+        if(ans[i]==']'){
+            m++;
+        }
+    }
+    string parsed;
+    for(size_t i=0;i<ans.size();i++){
+        if(ans[i]!='['&&ans[i]!=']'){
+            parsed.push_back(ans[i]);
+        }
+    }
+    size_t indx =0;
+    char c;
+    while(c!=','){
+        c=parsed[indx++];
+        if(c==' '){
+            spaces++;
+        }
+    }
+    n=spaces+1;
+    ans = "";
+    for(size_t i=0;i<parsed.size();i++){
+        if(parsed[i]!=',')
+        ans.push_back(parsed[i]);
+    }
+    string delimiter = " ";
+    vector<double> vec;
+    indx = 0;
+    size_t size =1;
+    vec.resize(size++);
+    while(ans.size()>1){
+        string token = ans.substr(0, ans.find(delimiter));
+        vec[indx++]=stod(token);
+        vec.resize(size++);
+        ans.erase(0, ans.find(delimiter) + delimiter.length());
+    }
+    a.matrix = new double*[n];
+    for(size_t i=0;i<n;i++){
+        a.matrix[i] = new double[m];
+    }
+    a.n=n;
+    a.m=m;
+    indx=0;
+    for(size_t i =0;i<n;i++){
+        for(size_t j =0;j<m;j++){
+            a.matrix[i][j]=vec[indx++];
+        }
+    }
+ 
+    return input;
+}
+

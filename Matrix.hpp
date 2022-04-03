@@ -8,32 +8,34 @@ namespace zich{
             double** matrix;
             size_t n;
             size_t m;
+            Matrix();
             Matrix(vector<double> data,int n,int m);
             ~Matrix();
-            void const print();
-            void operator+=(const Matrix& a);
-            void operator-=(const Matrix& a);
-            Matrix operator-();
-            Matrix operator+();
-            void operator*=(const double scalar);
-            void operator*=(const Matrix& a);
+            void operator+=(const Matrix& a) const;
+            void operator-=(const Matrix& a) const;
+            Matrix operator-() const;
+            Matrix operator+() const;
+            void operator*=(const double scalar) const;
+            void operator*=(const Matrix& a) const;
             Matrix& operator++();
             Matrix operator++(int);
             Matrix& operator--();
             Matrix operator--(int);
+            friend Matrix operator-(const Matrix& a,const Matrix& b);
+            friend Matrix operator+(const Matrix& a,const Matrix& b);
+            friend Matrix operator*(const double scalar,const Matrix& a);
+            friend Matrix operator*(const Matrix& a,const double scalar);
+            friend Matrix operator*(const Matrix& a,const Matrix& b);
+            friend bool operator<(const Matrix& a, const Matrix& b);
+            friend bool operator==(const Matrix& a, const Matrix& b);
+            friend bool operator<=(const Matrix& a, const Matrix& b);
+            friend bool operator>(const Matrix& a, const Matrix& b);
+            friend bool operator>=(const Matrix& a, const Matrix& b);
+            friend ostream& operator<< (ostream& output, const Matrix& a);
+            friend istream& operator>> (istream& input, Matrix& a);
     };
-    Matrix operator+(const Matrix& a,const Matrix& b);
-    Matrix operator-(const Matrix& a,const Matrix& b);
-    Matrix operator*(const double scalar,const Matrix& a);
-    Matrix operator*(const Matrix& a,const double scalar);
-    Matrix operator*(const Matrix& a,const Matrix& b);
-    bool operator<(const Matrix& a, const Matrix& b);
-    bool operator==(const Matrix& a, const Matrix& b);
-    bool operator<=(const Matrix& a, const Matrix& b);
-    bool operator>(const Matrix& a, const Matrix& b);
-    bool operator>=(const Matrix& a, const Matrix& b);
-    ostream& operator<< (ostream& output, const Matrix& a);
-    ostream& operator>> (ostream& intput, const Matrix& a);
+
+
 }
 
 
