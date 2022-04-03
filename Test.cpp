@@ -5,6 +5,7 @@
 #include <stdexcept>
 using namespace std;
 using namespace zich;
+
 TEST_CASE("bad initialization"){
     vector<double> v = {1,2,3,1,2,3,1,2,3};
     CHECK_THROWS(Matrix a(v,3,2));
@@ -39,7 +40,9 @@ TEST_CASE("bad comparison test"){
     CHECK_THROWS(if(a>b){});
     CHECK_THROWS(if(a!=b){});
 }
-
+/*
+Testing all addition and subtraction operators.
+*/
 TEST_CASE("Good addition and subtraction tests"){
     vector<double> m1 = {1,2,2,1,1,1,2,1};
     Matrix mat1(m1,4,2);
@@ -133,7 +136,9 @@ TEST_CASE("Good multiplication tests"){
     three_ID*=third;
     CHECK(three_ID==ID);
 }
-
+/*
+Testing mult on non defined matrix mult (m1!=n2);
+*/
 TEST_CASE("Bad multipliacation tests"){
       vector<double> m1 = {1,2,2,1,1,1,2,1};
     Matrix mat1(m1,2,4);
@@ -141,8 +146,9 @@ TEST_CASE("Bad multipliacation tests"){
     CHECK_THROWS(mat1*mat2);
     CHECK_THROWS(mat2*mat1);
 }
-
-
+/*
+Testing input and output functions.
+*/
 TEST_CASE("input and output test"){
     istringstream sinput("[1 2], [2 1], [1 1], [2 1]");
     Matrix x;
@@ -167,9 +173,11 @@ TEST_CASE("input and output test"){
                           "[1 1 2 1]\n");
 
 }
+/*
+Check assingment after changing original matricies demensions.
+*/
 TEST_CASE("mult"){
     vector<double> v = {1,2,3,4,1,2,3,4};
-    //vector<double> v1 = {1,2,3,4,1,2,3,4};
     Matrix A(v,4,2);
     Matrix B(v,2,4);
     CHECK_NOTHROW(A=A*B);
