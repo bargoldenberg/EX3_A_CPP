@@ -5,6 +5,12 @@
 #include <stdexcept>
 using namespace std;
 using namespace zich;
+TEST_CASE("bad initialization"){
+    vector<double> v = {1,2,3,1,2,3,1,2,3};
+    CHECK_THROWS(Matrix a(v,3,2));
+    CHECK_THROWS(Matrix b(v,-3,3));
+    CHECK_THROWS(Matrix c(v,3,-3)); 
+}
 
 TEST_CASE("good comparision tests"){
     vector<double> v = {1,2,3,1,2,3,1,2,3};
@@ -14,11 +20,26 @@ TEST_CASE("good comparision tests"){
     mat--;
     CHECK(mat<mat2);
     CHECK_FALSE(mat>=mat2);
+    CHECK_FALSE(mat>mat2);
+    CHECK(mat2>mat);
+    CHECK_FALSE(mat!=mat);
+    CHECK(mat<=mat2);
 }
-    // istringstream sinput("[1 2], [2, 1], [1 1], [2 1]");
-    // Matrix x;
-    // sinput>>x;
-    // cout<<x<<endl; 
+
+TEST_CASE("bad comparison test"){
+    vector<double> v = {1,2,3,1,2,3,1,2,3};
+    CHECK_THROWS(Matrix a(v,3,2));
+    Matrix a(v,3,3);
+    vector<double> v1 = {1,2,3,1,2,3};
+    Matrix b(v1,2,3);  
+    CHECK_THROWS(if(a==b){});
+    CHECK_THROWS(if(a<b){});
+    CHECK_THROWS(if(a<=b){});
+    CHECK_THROWS(if(a>=b){});
+    CHECK_THROWS(if(a>b){});
+    CHECK_THROWS(if(a!=b){});
+}
+
 TEST_CASE("Good addition and subtraction tests"){
     vector<double> m1 = {1,2,2,1,1,1,2,1};
     Matrix mat1(m1,4,2);
@@ -50,6 +71,18 @@ TEST_CASE("Good addition and subtraction tests"){
     Matrix y = sum-onemat;
     CHECK(y==mcheck);
     CHECK(y==+y);
+}
+
+TEST_CASE("Bad addition and subtraction tests"){
+    vector<double> v = {1,2,3,1,2,3,1,2,3};
+    CHECK_THROWS(Matrix a(v,3,2));
+    Matrix a(v,3,3);
+    vector<double> v1 = {1,2,3,1,2,3};
+    Matrix b(v1,2,3);
+    CHECK_THROWS(Matrix c = a + b);
+    CHECK_THROWS(Matrix c = a - b);
+    CHECK_THROWS(a+=b);
+    CHECK_THROWS(a-=b);
 }
 
 TEST_CASE("Good multiplication tests"){
@@ -99,4 +132,28 @@ TEST_CASE("Good multiplication tests"){
     CHECK(three_ID*third==ID);
     three_ID*=third;
     CHECK(three_ID==ID);
+}
+TEST_CASE("input and output test"){
+    istringstream sinput("[1 2], [2 1], [1 1], [2 1]");
+    Matrix x;
+    sinput>>x;
+    vector<double> comp = {1,2,2,1,1,1,2,1};
+    Matrix compare(comp,4,2);
+    CHECK(compare==x);
+    ostringstream soutput;
+    soutput << x;
+    CHECK(soutput.str()=="[1 2]\n"
+                         "[2 1]\n"
+                         "[1 1]\n"
+                         "[2 1]\n"); 
+    istringstream sinput2("[1 2 2 1], [1 1 2 1]");
+    Matrix cmp2(comp,2,4);
+    Matrix y;
+    sinput2>>y;
+    CHECK(cmp2==y);
+    ostringstream soutput2;
+    soutput2<<y;
+    CHECK(soutput2.str()=="[1 2 2 1]\n"
+                          "[1 1 2 1]\n");
+
 }

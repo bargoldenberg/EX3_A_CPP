@@ -250,7 +250,7 @@ void zich::Matrix::operator*=(const Matrix& a) const{
         }
     }
 }
-friend bool operator!=(const Matrix& a, const Matrix& b){
+bool zich::operator!=(const Matrix& a, const Matrix& b){
     return !(a==b);
 }
 
