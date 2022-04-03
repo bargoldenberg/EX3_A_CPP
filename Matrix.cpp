@@ -99,6 +99,26 @@ Matrix zich::operator-(const Matrix& a,const Matrix& b) {
     return Matrix(res,(int)n,(int)m);
 }
 
+Matrix& zich::Matrix::operator=(const Matrix& a){
+    Matrix cpy = +(*this);
+    for(size_t i = 0;i< this->n;i++){
+        delete [] this->matrix[i];
+    }
+    delete [] this->matrix;
+    this->matrix = new double*[a.n];
+    this->m = a.m;
+    this->n = a.n;
+    for(size_t i=0;i<this->n;i++){
+        this->matrix[i] = new double[this->m];
+    }
+    for(size_t i=0;i<this->n;i++){
+        for(size_t j=0;j<this->m;j++){
+            this->matrix[i][j]=a.matrix[i][j];
+        }
+    }
+    return *this;
+}
+
 Matrix zich::Matrix::operator+() const{
     vector<double> res;
     res.resize(this->n*this->m);
@@ -217,12 +237,14 @@ Matrix zich::operator*(const double scalar, const Matrix& a){
     vector<double> res;
     res.resize(a.n*a.m);
     size_t k=0;
-    for(size_t i = 0; i<a.m; i++){
+    size_t n = a.n;
+    size_t m = a.m;
+    for(size_t i = 0; i<a.n; i++){
         for(size_t j=0; j<a.m; j++){
-            res[k++]=a.matrix[i][j]*scalar;
-        }
+            res[k++]=a.matrix[i][j]*scalar;    
+       }
     }
-    return Matrix(res,a.n,a.m);
+    return +Matrix(res,n,m);
 }
 
 Matrix zich::operator*(const Matrix& a,const double scalar){
@@ -237,18 +259,10 @@ void zich::Matrix::operator*=(const double scalar) const{
     }
 }
 
-void zich::Matrix::operator*=(const Matrix& a) const{
+
+void zich::Matrix::operator*=(const Matrix& a){
     throw_exceptions_mult(this->n,this->m,a.n,a.m);
-    vector<double> res;
-    res.resize(this->n*a.m);
-    size_t count=0;
-    for(size_t i=0;i<this->n;i++){
-        for(size_t j=0;j<a.m;j++){
-            for(size_t k=0;k<this->m;k++){
-                this->matrix[i][j]=this->matrix[i][k]*a.matrix[k][j];
-            }
-        }
-    }
+    *this = *this*a;
 }
 bool zich::operator!=(const Matrix& a, const Matrix& b){
     return !(a==b);

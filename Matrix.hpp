@@ -16,11 +16,12 @@ namespace zich{
             Matrix operator-() const;
             Matrix operator+() const;
             void operator*=(const double scalar) const;
-            void operator*=(const Matrix& a) const;
+            void operator*=(const Matrix& a);
             Matrix& operator++();
             Matrix operator++(int);
             Matrix& operator--();
             Matrix operator--(int);
+            Matrix& operator=(const Matrix& a);
             friend Matrix operator-(const Matrix& a,const Matrix& b);
             friend Matrix operator+(const Matrix& a,const Matrix& b);
             friend Matrix operator*(const double scalar,const Matrix& a);

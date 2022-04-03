@@ -133,6 +133,16 @@ TEST_CASE("Good multiplication tests"){
     three_ID*=third;
     CHECK(three_ID==ID);
 }
+
+TEST_CASE("Bad multipliacation tests"){
+      vector<double> m1 = {1,2,2,1,1,1,2,1};
+    Matrix mat1(m1,2,4);
+    Matrix mat2(m1,1,8);
+    CHECK_THROWS(mat1*mat2);
+    CHECK_THROWS(mat2*mat1);
+}
+
+
 TEST_CASE("input and output test"){
     istringstream sinput("[1 2], [2 1], [1 1], [2 1]");
     Matrix x;
@@ -156,4 +166,14 @@ TEST_CASE("input and output test"){
     CHECK(soutput2.str()=="[1 2 2 1]\n"
                           "[1 1 2 1]\n");
 
+}
+TEST_CASE("mult"){
+    vector<double> v = {1,2,3,4,1,2,3,4};
+    //vector<double> v1 = {1,2,3,4,1,2,3,4};
+    Matrix A(v,4,2);
+    Matrix B(v,2,4);
+    CHECK_NOTHROW(A=A*B);
+    CHECK_THROWS(A*=B);
+    
+    
 }
